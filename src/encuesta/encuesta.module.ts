@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { EncuestaService } from './encuesta.service';
-import { EncuestaController } from './encuesta.controller';
+import { EncuestaService } from './providers/encuesta.service';
+import { EncuestaController } from './controllers/encuesta.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Encuesta } from './entities/encuesta.entity';
-
+import { Encuesta, Pregunta, Respuesta } from './entities';
+import { PreguntaService } from './providers/pregunta.service';
+import { PreguntaController } from './controllers/pregunta.controller';
+  
 @Module({
-  controllers: [EncuestaController],
-  providers: [EncuestaService],
-  imports:[
-    TypeOrmModule.forFeature([Encuesta])
-  ]
+  controllers: [EncuestaController, PreguntaController],
+  providers: [EncuestaService, PreguntaService],
+  imports: [TypeOrmModule.forFeature([Encuesta, Pregunta,Respuesta])],
 })
 export class EncuestaModule {}

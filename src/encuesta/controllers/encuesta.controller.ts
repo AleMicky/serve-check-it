@@ -9,24 +9,24 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { EncuestaService } from './encuesta.service';
-import { CreateEncuestaDto } from './dto/create-encuesta.dto';
-import { UpdateEncuestaDto } from './dto/update-encuesta.dto';
-import { PaginationDto } from '../common/dtos/pagination.dto';
+import { EncuestaService } from '../providers/encuesta.service';
+import { CreateEncuestaDto } from '../dto/encuesta/create-encuesta.dto';
+import { UpdateEncuestaDto } from '../dto/encuesta/update-encuesta.dto';
+import { PaginationDto } from '../../common/dtos/pagination.dto';
+import { CreateQuestDto } from '../dto/encuesta/create-quest.dto';
 
 @Controller('encuesta')
 export class EncuestaController {
   constructor(private readonly encuestaService: EncuestaService) {}
 
-  @Post()
+  /*@Post()
   create(@Body() createEncuestaDto: CreateEncuestaDto) {
     return this.encuestaService.create(createEncuestaDto);
-  }
+  }*/
 
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
-    // console.log(paginationDto);
-    return this.encuestaService.findAll(paginationDto);
+     return this.encuestaService.findAll(paginationDto);
   }
 
   @Get(':id')
@@ -45,5 +45,11 @@ export class EncuestaController {
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.encuestaService.remove(id);
+  }
+
+
+  @Post()
+  createQuest(@Body() createQuestDto: CreateQuestDto) {
+    return this.encuestaService.createQuest(createQuestDto);
   }
 }

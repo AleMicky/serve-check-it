@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm'; 
 import { EncuestaModule } from './encuesta/encuesta.module';
 import { CommonModule } from './common/common.module';
-
+ 
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -19,7 +19,7 @@ import { CommonModule } from './common/common.module';
       synchronize: true
     }),
     EncuestaModule,
-    CommonModule,
+    CommonModule, 
   ],
   controllers: [],
   providers: [],

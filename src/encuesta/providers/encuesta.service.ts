@@ -8,9 +8,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { Repository } from 'typeorm';
-import { CreateEncuestaDto } from './dto/create-encuesta.dto';
-import { UpdateEncuestaDto } from './dto/update-encuesta.dto';
-import { Encuesta } from './entities/encuesta.entity';
+import { CreateEncuestaDto } from '../dto/encuesta/create-encuesta.dto';
+import { UpdateEncuestaDto } from '../dto/encuesta/update-encuesta.dto';
+import { Encuesta } from '../entities';
+import { CreateQuestDto } from '../dto/encuesta/create-quest.dto';
+import { Pregunta } from '../entities/pregunta.entity';
 
 @Injectable()
 export class EncuestaService {
@@ -19,6 +21,8 @@ export class EncuestaService {
   constructor(
     @InjectRepository(Encuesta)
     private readonly encuestaRepository: Repository<Encuesta>,
+    @InjectRepository(Pregunta)
+    private readonly preguntaRepository: Repository<Pregunta>,
   ) {}
 
   async create(createEncuestaDto: CreateEncuestaDto) {
@@ -33,11 +37,14 @@ export class EncuestaService {
 
   async findAll(paginationDto: PaginationDto) {
     const { limit = 10, offset = 0 } = paginationDto;
-    return await this.encuestaRepository.find({
+    const encuesta = await this.encuestaRepository.find({
       take: limit,
       skip: offset,
-      //TODO
+      relations: {
+        preguntas: true,
+      },
     });
+    return encuesta;
   }
 
   async findOne(id: string) {
@@ -63,6 +70,25 @@ export class EncuestaService {
   async remove(id: string) {
     const encuesta = await this.findOne(id);
     await this.encuestaRepository.remove(encuesta);
+  }
+
+  async createQuest(createQuestDto: CreateQuestDto) {
+    try {
+      const { preguntas, ...encuestaDetails } = createQuestDto;
+
+      const quest = this.encuestaRepository.create({
+        ...encuestaDetails,
+        preguntas: preguntas.map((pregunta) =>
+          this.preguntaRepository.create(pregunta),
+        ),
+      });
+
+      await this.encuestaRepository.save(quest);
+
+      return { ...quest, preguntas };
+    } catch (error) {
+      this.handleDBException(error);
+    }
   }
 
   private handleDBException(error: any) {
