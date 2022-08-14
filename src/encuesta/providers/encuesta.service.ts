@@ -10,9 +10,8 @@ import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { Repository } from 'typeorm';
 import { CreateEncuestaDto } from '../dto/encuesta/create-encuesta.dto';
 import { UpdateEncuestaDto } from '../dto/encuesta/update-encuesta.dto';
-import { Encuesta } from '../entities';
+import { Encuesta, Pregunta, Respuesta } from '../entities';
 import { CreateQuestDto } from '../dto/encuesta/create-quest.dto';
-import { Pregunta } from '../entities/pregunta.entity';
 
 @Injectable()
 export class EncuestaService {
@@ -23,6 +22,8 @@ export class EncuestaService {
     private readonly encuestaRepository: Repository<Encuesta>,
     @InjectRepository(Pregunta)
     private readonly preguntaRepository: Repository<Pregunta>,
+    @InjectRepository(Respuesta)
+    private readonly respuestaRepository: Repository<Respuesta>,
   ) {}
 
   async create(createEncuestaDto: CreateEncuestaDto) {
@@ -74,12 +75,18 @@ export class EncuestaService {
 
   async createQuest(createQuestDto: CreateQuestDto) {
     try {
-      const { preguntas, ...encuestaDetails } = createQuestDto;
+      const { preguntas, ...encuesta } = createQuestDto;
 
       const quest = this.encuestaRepository.create({
-        ...encuestaDetails,
-        preguntas: preguntas.map((pregunta) =>
-          this.preguntaRepository.create(pregunta),
+        ...encuesta,
+        preguntas: preguntas.map(({ nombre, tipoRespuesta, respuestas }) =>
+          this.preguntaRepository.create({
+            nombre,
+            tipoRespuesta,
+            respuestas: respuestas?.map(({ nombre }) =>
+              this.respuestaRepository.create({ nombre }),
+            ),
+          }),
         ),
       });
 

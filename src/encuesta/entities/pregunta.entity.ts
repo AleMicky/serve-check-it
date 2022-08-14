@@ -28,6 +28,6 @@ export class Pregunta {
   })
   encuesta: Encuesta;
 
-  @OneToMany(() => Respuesta, (respuesta) => respuesta, { cascade: true })
+  @OneToMany(() => Respuesta, (respuesta) => respuesta.pregunta, { cascade: true, eager: true  })
   respuestas?: Respuesta[];
 }
