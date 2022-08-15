@@ -14,10 +14,9 @@ import { CommonModule } from './common/common.module';
       database: process.env.DB_NAME,
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
-      ssl: process.env.STAGE === 'prod',
+      ssl: true,
       extra: {
-        ssl:
-          process.env.STAGE === 'prod' ? { rejectUnauthorized: false } : null,
+        ssl: { rejectUnauthorized: false },
       },
       autoLoadEntities: true,
       synchronize: true,
